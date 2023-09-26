@@ -1,6 +1,6 @@
-package com.urise.webapp.storage;
+package ru.javawebinar.basejava.storage;
 
-import com.urise.webapp.model.Resume;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
 
@@ -8,10 +8,6 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private static final String ERROR_RESUME_WITH_UUID = "ERROR: resume with uuid ";
-    private static final String ERROR_STORAGE_IS_FULL = "ERROR: storage is full";
-    private static final String NOT_EXIST = " not exists";
-    private static final String ALREADY_EXIST = " already exists";
     private static final int _10000 = 10000;
 
     Resume[] storage = new Resume[_10000];
@@ -23,17 +19,15 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        if (size == _10000) {
-            System.out.println(ERROR_STORAGE_IS_FULL);
-            return;
-        }
         String uuid = r.getUuid();
         int index = findIndex(uuid);
-        if (index == -1) {
+        if (index > -1) {
+            System.out.println("Resume with uuid " + uuid + " already exists");
+        } else if (size == _10000) {
+            System.out.println("Storage is overflow");
+        } else {
             storage[size] = r;
             size++;
-        } else {
-            System.out.println(ERROR_RESUME_WITH_UUID + uuid + ALREADY_EXIST);
         }
     }
 
@@ -41,7 +35,7 @@ public class ArrayStorage {
         String uuid = r.getUuid();
         int index = findIndex(uuid);
         if (index == -1) {
-            System.out.println(getErrorResumeDoesNotExistMessage(uuid));
+            System.out.println(getResumeDoesNotExistMessage(uuid));
         } else {
             storage[index] = r;
         }
@@ -50,7 +44,7 @@ public class ArrayStorage {
     public Resume get(String uuid) {
         int index = findIndex(uuid);
         if (index == -1) {
-            System.out.println(getErrorResumeDoesNotExistMessage(uuid));
+            System.out.println(getResumeDoesNotExistMessage(uuid));
             return null;
         } else {
             return storage[index];
@@ -60,7 +54,7 @@ public class ArrayStorage {
     public void delete(String uuid) {
         int index = findIndex(uuid);
         if (index == -1) {
-            System.out.println(getErrorResumeDoesNotExistMessage(uuid));
+            System.out.println(getResumeDoesNotExistMessage(uuid));
         } else {
             storage[index] = storage[size - 1];
             storage[size - 1] = null;
@@ -88,7 +82,7 @@ public class ArrayStorage {
         return -1;
     }
 
-    private String getErrorResumeDoesNotExistMessage(String uuid) {
-        return ERROR_RESUME_WITH_UUID + uuid + NOT_EXIST;
+    private String getResumeDoesNotExistMessage(String uuid) {
+        return "Resume with uuid " + uuid + " not exists";
     }
 }
