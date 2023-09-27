@@ -5,12 +5,10 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
-    public void insertResume(Resume r) {
-        int i;
-        for (i = size - 1; (i >= 0 && storage[i].compareTo(r) > 0); i--) {
-            storage[i + 1] = storage[i];
-        }
-        storage[i + 1] = r;
+    public void insertResume(Resume r, int index) {
+        int pos = -index - 1;
+        System.arraycopy(storage, pos, storage, pos + 1, size - pos);
+        storage[pos] = r;
     }
 
     @Override
