@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
+    @Override
     public void insertResume(Resume r, int index) {
         int pos = -index - 1;
         System.arraycopy(storage, pos, storage, pos + 1, size - pos);
@@ -20,8 +21,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
     protected int findIndex(String uuid) {
-        Resume searchKey = new Resume();
-        searchKey.setUuid(uuid);
+        Resume searchKey = new Resume(uuid);
         return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 }
