@@ -6,14 +6,14 @@ import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
-    public void insertResume(Resume r, int index) {
+    protected void insertResume(Resume r, int index) {
         int pos = -index - 1;
         System.arraycopy(storage, pos, storage, pos + 1, size - pos);
         storage[pos] = r;
     }
 
     @Override
-    public void removeResume(int index) {
+    protected void removeResume(int index) {
         if (size - index >= 0) {
             System.arraycopy(storage, index + 1, storage, index, size - index);
         }
