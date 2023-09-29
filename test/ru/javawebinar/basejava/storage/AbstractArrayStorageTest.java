@@ -8,12 +8,10 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import static ru.javawebinar.basejava.storage.AbstractArrayStorage.STORAGE_LIMIT;
-
 abstract class AbstractArrayStorageTest {
     private final Storage storage;
 
-    public AbstractArrayStorageTest(Storage storage) {
+    protected AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
     }
 
@@ -21,60 +19,63 @@ abstract class AbstractArrayStorageTest {
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
     private static final String UUID_4 = "uuid4";
-    private static final Resume RESUME1 = new Resume(UUID_1);
-    private static final Resume RESUME2 = new Resume(UUID_2);
-    private static final Resume RESUME3 = new Resume(UUID_3);
+    private static final Resume RESUME_1 = new Resume(UUID_1);
+    private static final Resume RESUME_2 = new Resume(UUID_2);
+    private static final Resume RESUME_3 = new Resume(UUID_3);
+    private static final Resume RESUME_4 = new Resume(UUID_4);
 
     @BeforeEach
     public void setUp() {
         storage.clear();
-        storage.save(RESUME1);
-        storage.save(RESUME2);
-        storage.save(RESUME3);
+        storage.save(RESUME_1);
+        storage.save(RESUME_2);
+        storage.save(RESUME_3);
     }
 
     @Test
     void clear() {
         storage.clear();
-        Assertions.assertEquals(0, storage.size());
+        assertSize(0);
     }
 
     @Test
     void size() {
-        Assertions.assertEquals(3, storage.size());
+        assertSize(3);
     }
 
     @Test
     void save() {
-        Resume resume = new Resume(UUID_4);
-        storage.save(resume);
-        Resume[] resumes = {RESUME1, RESUME2, RESUME3, resume};
+        storage.save(RESUME_4);
+        assertSize(4);
+        Resume[] resumes = {RESUME_1, RESUME_2, RESUME_3, RESUME_4};
         Assertions.assertArrayEquals(resumes, storage.getAll());
     }
 
     @Test
     void update() {
-        storage.update(RESUME2);
-        Resume[] resumes = {RESUME1, RESUME2, RESUME3};
+        storage.update(RESUME_2);
+        Resume[] resumes = {RESUME_1, RESUME_2, RESUME_3};
         Assertions.assertArrayEquals(resumes, storage.getAll());
     }
 
     @Test
     void get() {
         Resume resume = storage.get(UUID_2);
-        Assertions.assertEquals(RESUME2, resume);
+        Assertions.assertEquals(RESUME_2, resume);
     }
 
     @Test
     void delete() {
         storage.delete(UUID_2);
-        Resume[] resumes = {RESUME1, RESUME3};
+        assertSize(2);
+        Resume[] resumes = {RESUME_1, RESUME_3};
         Assertions.assertArrayEquals(resumes, storage.getAll());
     }
 
     @Test
     void getAll() {
-        Resume[] resumes = {RESUME1, RESUME2, RESUME3};
+        assertSize(3);
+        Resume[] resumes = {RESUME_1, RESUME_2, RESUME_3};
         Assertions.assertArrayEquals(resumes, storage.getAll());
     }
 
@@ -97,7 +98,7 @@ abstract class AbstractArrayStorageTest {
     public void saveStorageIsOverflow() {
         try {
             int size = storage.size();
-            for (int i = 0; i < STORAGE_LIMIT - size; i++) {
+            for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT - size; i++) {
                 storage.save(new Resume());
             }
         } catch (ExistStorageException e) {
@@ -112,9 +113,8 @@ abstract class AbstractArrayStorageTest {
 
     @Test
     public void updateNotExist() {
-        Resume resume = new Resume(UUID_4);
         Assertions.assertThrows(NotExistStorageException.class, () ->
-                storage.update(resume)
+                storage.update(RESUME_4)
         );
     }
 
@@ -123,5 +123,9 @@ abstract class AbstractArrayStorageTest {
         Assertions.assertThrows(NotExistStorageException.class, () ->
                 storage.delete("dummy")
         );
+    }
+
+    private void assertSize(int size) {
+        Assertions.assertEquals(size, storage.size());
     }
 }
