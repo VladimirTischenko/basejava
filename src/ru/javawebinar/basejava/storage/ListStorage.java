@@ -26,8 +26,10 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public void save(Resume r) {
-        if (storage.contains(r)) {
-            throw new ExistStorageException(r.getUuid());
+        String uuid = r.getUuid();
+        Optional<Resume> optionalResume = getOptionalResumeByUuid(uuid);
+        if (optionalResume.isPresent()) {
+            throw new ExistStorageException(uuid);
         } else {
             storage.add(r);
         }
@@ -35,8 +37,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     public Resume get(String uuid) {
-        Optional<Resume> optionalResume = storage.stream().filter(resume -> Objects.equals(resume.getUuid(), uuid))
-                .findFirst();
+        Optional<Resume> optionalResume = getOptionalResumeByUuid(uuid);
         return optionalResume.orElseThrow(() -> new NotExistStorageException(uuid));
     }
 
@@ -56,5 +57,10 @@ public class ListStorage extends AbstractStorage {
     @Override
     public int size() {
         return storage.size();
+    }
+
+    private Optional<Resume> getOptionalResumeByUuid(String uuid) {
+        return storage.stream().filter(resume -> Objects.equals(resume.getUuid(), uuid))
+                .findFirst();
     }
 }

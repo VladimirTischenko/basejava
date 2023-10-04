@@ -19,8 +19,7 @@ public class MapStorage extends AbstractStorage {
     @Override
     public void update(Resume r) {
         String uuid = r.getUuid();
-        boolean b = storage.containsKey(uuid);
-        if (b) {
+        if (storage.containsKey(uuid)) {
             storage.put(uuid, r);
         } else {
             throw new NotExistStorageException(uuid);
@@ -33,7 +32,7 @@ public class MapStorage extends AbstractStorage {
         if (storage.containsKey(uuid)) {
             throw new ExistStorageException(uuid);
         } else {
-            storage.put(r.getUuid(), r);
+            storage.put(uuid, r);
         }
     }
 

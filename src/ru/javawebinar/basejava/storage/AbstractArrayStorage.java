@@ -36,32 +36,19 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     public void update(Resume r) {
-        String uuid = r.getUuid();
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            storage[index] = r;
-        }
+        int index = findExistedIndex(r.getUuid());
+        storage[index] = r;
     }
 
     public Resume get(String uuid) {
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            return storage[index];
-        }
+        int index = findExistedIndex(uuid);
+        return storage[index];
     }
 
     public void delete(String uuid) {
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            removeResume(index);
-            size--;
-        }
+        int index = findExistedIndex(uuid);
+        removeResume(index);
+        size--;
     }
 
     /**
@@ -69,6 +56,14 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
      */
     public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
+    }
+
+    private int findExistedIndex(String uuid) {
+        int index = findIndex(uuid);
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+        return index;
     }
 
     protected abstract int findIndex(String uuid);

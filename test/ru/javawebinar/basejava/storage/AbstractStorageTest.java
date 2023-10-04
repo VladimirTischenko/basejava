@@ -54,7 +54,8 @@ abstract class AbstractStorageTest {
     @Test
     void update() {
         Resume resume = new Resume(UUID_2);
-        assertGet(resume);
+        storage.update(resume);
+        assertEquals(resume, storage.get(UUID_2));
     }
 
     @Test
@@ -75,9 +76,10 @@ abstract class AbstractStorageTest {
     @Test
     void getAll() {
         assertSize(3);
-        assertGet(RESUME_1);
-        assertGet(RESUME_2);
-        assertGet(RESUME_3);
+        Resume[] resumes = storage.getAll();
+        assertGet(resumes[0]);
+        assertGet(resumes[1]);
+        assertGet(resumes[2]);
     }
 
     @Test
