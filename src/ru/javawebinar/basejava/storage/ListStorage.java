@@ -4,10 +4,7 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class ListStorage extends AbstractStorage {
     protected final List<Resume> storage = new ArrayList<>();
@@ -50,8 +47,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume[] getAll() {
-        return storage.toArray(Resume[]::new);
+    public List<Resume> getResumesForSorting() {
+        return storage;
     }
 
     @Override

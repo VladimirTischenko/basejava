@@ -6,6 +6,8 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractStorageTest {
@@ -19,17 +21,17 @@ abstract class AbstractStorageTest {
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
     private static final String UUID_4 = "uuid4";
-    private static final Resume RESUME_1 = new Resume(UUID_1);
-    private static final Resume RESUME_2 = new Resume(UUID_2);
-    private static final Resume RESUME_3 = new Resume(UUID_3);
-    private static final Resume RESUME_4 = new Resume(UUID_4);
+    private static final Resume RESUME_1 = new Resume(UUID_1, "Second");
+    private static final Resume RESUME_2 = new Resume(UUID_2, "First");
+    private static final Resume RESUME_3 = new Resume(UUID_3, "First");
+    private static final Resume RESUME_4 = new Resume(UUID_4, "Fourth");
 
     @BeforeEach
     public void setUp() {
         storage.clear();
         storage.save(RESUME_1);
-        storage.save(RESUME_2);
         storage.save(RESUME_3);
+        storage.save(RESUME_2);
     }
 
     @Test
@@ -53,7 +55,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume resume = new Resume(UUID_2);
+        Resume resume = new Resume(UUID_2, null);
         storage.update(resume);
         assertEquals(resume, storage.get(UUID_2));
     }
@@ -74,12 +76,11 @@ abstract class AbstractStorageTest {
     }
 
     @Test
-    void getAll() {
+    void getAllSorted() {
         assertSize(3);
-        Resume[] resumes = storage.getAll();
-        assertGet(resumes[0]);
-        assertGet(resumes[1]);
-        assertGet(resumes[2]);
+        List<Resume> expectedResumes = List.of(RESUME_2, RESUME_3, RESUME_1);
+        List<Resume> actualResumes = storage.getAllSorted();
+        assertIterableEquals(expectedResumes, actualResumes);
     }
 
     @Test
@@ -91,7 +92,7 @@ abstract class AbstractStorageTest {
 
     @Test
     public void saveAlreadyExist() {
-        Resume resume = new Resume(UUID_3);
+        Resume resume = new Resume(UUID_3, null);
         assertThrows(ExistStorageException.class, () ->
                 storage.save(resume)
         );

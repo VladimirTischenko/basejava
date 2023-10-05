@@ -6,6 +6,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
     protected static final int STORAGE_LIMIT = 10000;
@@ -51,11 +52,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size--;
     }
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
+    public List<Resume> getResumesForSorting() {
+        Resume[] resumes = Arrays.copyOf(storage, size);
+        return Arrays.asList(resumes);
     }
 
     private int findExistedIndex(String uuid) {
