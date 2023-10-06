@@ -16,7 +16,7 @@ abstract class AbstractArrayStorageTest extends AbstractStorageTest{
         try {
             int size = storage.size();
             for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT - size; i++) {
-                storage.save(new Resume());
+                storage.save(new Resume("Name" + i));
             }
         } catch (ExistStorageException e) {
             Assertions.fail("Resume with uuid " + e.getUuid() + " already exists");
@@ -24,7 +24,7 @@ abstract class AbstractArrayStorageTest extends AbstractStorageTest{
             Assertions.fail("Overflow occurred ahead of time");
         }
         Assertions.assertThrows(StorageException.class, () ->
-                storage.save(new Resume())
+                storage.save(new Resume("Overflow Name"))
         );
     }
 

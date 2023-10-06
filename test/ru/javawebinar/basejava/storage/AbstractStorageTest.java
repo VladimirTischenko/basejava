@@ -55,7 +55,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume resume = new Resume(UUID_2, null);
+        Resume resume = new Resume(UUID_2, "New Name");
         storage.update(resume);
         assertEquals(resume, storage.get(UUID_2));
     }
@@ -92,9 +92,8 @@ abstract class AbstractStorageTest {
 
     @Test
     public void saveAlreadyExist() {
-        Resume resume = new Resume(UUID_3, null);
         assertThrows(ExistStorageException.class, () ->
-                storage.save(resume)
+                storage.save(RESUME_3)
         );
     }
 

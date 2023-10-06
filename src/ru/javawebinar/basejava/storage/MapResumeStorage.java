@@ -1,62 +1,57 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MapResumeStorage extends AbstractStorage {
-    protected final Map<Resume, String> storage = new HashMap<>();
-
-    @Override
-    protected List<Resume> getResumesForSorting() {
-        return new ArrayList<>(storage.keySet());
-    }
+    protected final Map<String, Resume> map = new HashMap<>();
 
     @Override
     public void clear() {
-        storage.clear();
+        map.clear();
     }
 
     @Override
-    public void update(Resume r) {
-        String uuid = r.getUuid();
-        if (storage.containsKey(r)) {
-            storage.put(r, uuid);
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+    public void doUpdate(Resume r, Object resume) {
+        map.put(r.getUuid(), r);
     }
 
     @Override
-    public void save(Resume r) {
-        String uuid = r.getUuid();
-        if (storage.containsKey(r)) {
-            throw new ExistStorageException(uuid);
-        } else {
-            storage.put(r, uuid);
-        }
+    public void doSave(Resume r, Object resume) {
+        map.put(r.getUuid(), r);
     }
 
     @Override
-    public Resume get(String uuid) {
-        Optional<Resume> optionalResume = storage.entrySet()
-                .stream()
-                .filter(entry -> uuid.equals(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .findFirst();
-        return optionalResume.orElseThrow(() -> new NotExistStorageException(uuid));
+    public Resume doGet(Object resume) {
+        return (Resume) resume;
     }
 
     @Override
-    public void delete(String uuid) {
-        Resume resume = get(uuid);
-        storage.remove(resume);
+    public void doDelete(Object resume) {
+        map.remove(((Resume) resume).getUuid());
+    }
+
+    @Override
+    public List<Resume> getCopyAll() {
+        return new ArrayList<>(map.values());
     }
 
     @Override
     public int size() {
-        return storage.size();
+        return map.size();
+    }
+
+    @Override
+    protected boolean isExist(Object resume) {
+        return resume != null;
+    }
+
+    @Override
+    protected Object findSearchKey(String uuid) {
+        return map.get(uuid);
     }
 }

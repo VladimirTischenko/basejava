@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -23,49 +21,44 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return size;
     }
 
-    public void save(Resume r) {
-        String uuid = r.getUuid();
-        int index = findIndex(uuid);
-        if (index >= 0) {
-            throw new ExistStorageException(uuid);
-        } else if (size >= STORAGE_LIMIT) {
-            throw new StorageException("Storage is overflow", uuid);
+    @Override
+    public void doSave(Resume r, Object index) {
+        if (size >= STORAGE_LIMIT) {
+            throw new StorageException("Storage is overflow", r.getUuid());
         } else {
-            insertResume(r, index);
+            insertResume(r, (Integer) index);
             size++;
         }
     }
 
-    public void update(Resume r) {
-        int index = findExistedIndex(r.getUuid());
-        storage[index] = r;
+    @Override
+    public void doUpdate(Resume r, Object index) {
+        storage[(Integer) index] = r;
     }
 
-    public Resume get(String uuid) {
-        int index = findExistedIndex(uuid);
-        return storage[index];
+    @Override
+    public Resume doGet(Object index) {
+        return storage[(Integer) index];
     }
 
-    public void delete(String uuid) {
-        int index = findExistedIndex(uuid);
-        removeResume(index);
+    @Override
+    public void doDelete(Object index) {
+        removeResume((Integer) index);
         size--;
     }
 
-    public List<Resume> getResumesForSorting() {
+    @Override
+    public List<Resume> getCopyAll() {
         Resume[] resumes = Arrays.copyOf(storage, size);
         return Arrays.asList(resumes);
     }
 
-    private int findExistedIndex(String uuid) {
-        int index = findIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return index;
+    @Override
+    protected boolean isExist(Object index) {
+        return (Integer) index >= 0;
     }
 
-    protected abstract int findIndex(String uuid);
+    protected abstract Integer findSearchKey(String uuid);
 
     protected abstract void insertResume(Resume r, int index);
 

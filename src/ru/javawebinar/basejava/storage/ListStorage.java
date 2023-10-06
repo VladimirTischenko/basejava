@@ -1,63 +1,60 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListStorage extends AbstractStorage {
-    protected final List<Resume> storage = new ArrayList<>();
+    protected final List<Resume> list = new ArrayList<>();
 
     @Override
     public void clear() {
-        storage.clear();
+        list.clear();
     }
 
     @Override
-    public void update(Resume r) {
-        Resume resume = get(r.getUuid());
-        int index = storage.indexOf(resume);
-        storage.set(index, r);
+    public void doUpdate(Resume r, Object index) {
+        list.set((Integer) index, r);
     }
 
     @Override
-    public void save(Resume r) {
-        String uuid = r.getUuid();
-        Optional<Resume> optionalResume = getOptionalResumeByUuid(uuid);
-        if (optionalResume.isPresent()) {
-            throw new ExistStorageException(uuid);
-        } else {
-            storage.add(r);
-        }
+    public void doSave(Resume r, Object index) {
+        list.add(r);
     }
 
     @Override
-    public Resume get(String uuid) {
-        Optional<Resume> optionalResume = getOptionalResumeByUuid(uuid);
-        return optionalResume.orElseThrow(() -> new NotExistStorageException(uuid));
+    public Resume doGet(Object index) {
+        return list.get((Integer) index);
     }
 
     @Override
-    public void delete(String uuid) {
-        boolean b = storage.removeIf(resume -> Objects.equals(resume.getUuid(), uuid));
-        if (!b) {
-            throw new NotExistStorageException(uuid);
-        }
+    public void doDelete(Object index) {
+        list.remove((int) index);
     }
 
     @Override
-    public List<Resume> getResumesForSorting() {
-        return storage;
+    public List<Resume> getCopyAll() {
+        return new ArrayList<>(list);
     }
 
     @Override
     public int size() {
-        return storage.size();
+        return list.size();
     }
 
-    private Optional<Resume> getOptionalResumeByUuid(String uuid) {
-        return storage.stream().filter(resume -> Objects.equals(resume.getUuid(), uuid))
-                .findFirst();
+    @Override
+    protected boolean isExist(Object index) {
+        return index != null;
+    }
+
+    @Override
+    protected Integer findSearchKey(String uuid) {
+        for (int i = 0; i < list.size(); i++) {
+            if (uuid.equals(list.get(i).getUuid())) {
+                return i;
+            }
+        }
+        return null;
     }
 }
