@@ -1,34 +1,37 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class ListSection implements Section {
-    private final String title;
-    private List<String> list = new ArrayList<>();
+public class ListSection extends Section {
+    private final List<String> list;
 
-    public ListSection(String title) {
-        this.title = title;
-    }
-
-    public String getTitle() {
-        return title;
+    public ListSection(List<String> list) {
+        Objects.requireNonNull(list, "list must not be null");
+        this.list = list;
     }
 
     public List<String> getList() {
         return list;
     }
 
-    public void setList(List<String> list) {
-        this.list = list;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ListSection that = (ListSection) o;
+
+        return list.equals(that.list);
     }
 
     @Override
-    public void print() {
-        StringBuilder result = new StringBuilder(title + '\n');
-        for (String s : list) {
-            result.append(s).append('\n');
-        }
-        System.out.println(result);
+    public int hashCode() {
+        return list.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return list.toString();
     }
 }

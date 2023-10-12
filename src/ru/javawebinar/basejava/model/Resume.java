@@ -11,9 +11,8 @@ public class Resume {
     private final String uuid;
     private final String fullName;
 
-    private final Map<String, String> contacts = new LinkedHashMap<>();
-
-    private final Map<Integer, Section> sectionTypes = new TreeMap<>();
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -34,12 +33,20 @@ public class Resume {
         return fullName;
     }
 
-    public Map<String, String> getContacts() {
+    public Map<ContactType, String> getContacts() {
         return contacts;
     }
 
-    public Map<Integer, Section> getSectionTypes() {
-        return sectionTypes;
+    public Map<SectionType, Section> getSections() {
+        return sections;
+    }
+
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
     @Override
@@ -66,25 +73,5 @@ public class Resume {
                 "uuid='" + uuid + '\'' +
                 ", fullName='" + fullName + '\'' +
                 '}';
-    }
-
-    public void print() {
-        StringBuilder result = new StringBuilder(this.getFullName() + '\n');
-        result.append('\n');
-
-        for (Map.Entry<String, String> entry : contacts.entrySet()) {
-            result.append(entry.getKey());
-            String value = entry.getValue();
-            if (value != null) {
-                result.append(" : ").append(value);
-            }
-            result.append('\n');
-        }
-
-        System.out.println(result);
-
-        for (Map.Entry<Integer, Section> entry : sectionTypes.entrySet()) {
-            entry.getValue().print();
-        }
     }
 }

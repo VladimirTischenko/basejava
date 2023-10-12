@@ -1,5 +1,4 @@
 package ru.javawebinar.basejava.model;
 
-public interface Section {
-    void print();
+abstract public class Section {
 }
