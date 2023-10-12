@@ -1,7 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Initial resume class
@@ -11,6 +10,10 @@ public class Resume {
     // Unique identifier
     private final String uuid;
     private final String fullName;
+
+    private final Map<String, String> contacts = new LinkedHashMap<>();
+
+    private final Map<Integer, Section> sectionTypes = new TreeMap<>();
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -29,6 +32,14 @@ public class Resume {
 
     public String getFullName() {
         return fullName;
+    }
+
+    public Map<String, String> getContacts() {
+        return contacts;
+    }
+
+    public Map<Integer, Section> getSectionTypes() {
+        return sectionTypes;
     }
 
     @Override
@@ -55,5 +66,25 @@ public class Resume {
                 "uuid='" + uuid + '\'' +
                 ", fullName='" + fullName + '\'' +
                 '}';
+    }
+
+    public void print() {
+        StringBuilder result = new StringBuilder(this.getFullName() + '\n');
+        result.append('\n');
+
+        for (Map.Entry<String, String> entry : contacts.entrySet()) {
+            result.append(entry.getKey());
+            String value = entry.getValue();
+            if (value != null) {
+                result.append(" : ").append(value);
+            }
+            result.append('\n');
+        }
+
+        System.out.println(result);
+
+        for (Map.Entry<Integer, Section> entry : sectionTypes.entrySet()) {
+            entry.getValue().print();
+        }
     }
 }
