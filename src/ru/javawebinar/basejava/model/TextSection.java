@@ -1,8 +1,9 @@
 package ru.javawebinar.basejava.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class TextSection extends Section {
+public class TextSection extends Section implements Serializable {
     private final String text;
 
     public TextSection(String text) {
