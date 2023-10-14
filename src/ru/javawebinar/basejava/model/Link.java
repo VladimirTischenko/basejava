@@ -3,14 +3,9 @@ package ru.javawebinar.basejava.model;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Link implements Serializable {
-    private final String name;
-    private final String url;
-
-    public Link(String name, String url) {
+public record Link(String name, String url) implements Serializable {
+    public Link {
         Objects.requireNonNull(name, "name must not be null");
-        this.name = name;
-        this.url = url;
     }
 
     public String getName() {

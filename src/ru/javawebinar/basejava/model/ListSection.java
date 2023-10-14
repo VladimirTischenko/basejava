@@ -1,11 +1,16 @@
 package ru.javawebinar.basejava.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class ListSection extends Section implements Serializable {
     private final List<String> list;
+
+    public ListSection(String... list) {
+        this(Arrays.asList(list));
+    }
 
     public ListSection(List<String> list) {
         Objects.requireNonNull(list, "list must not be null");

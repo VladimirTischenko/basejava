@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.*;
@@ -8,22 +9,37 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
-    private static final File DIR = new File("./fileStorage");
+    private final File directory;
+
+    protected AbstractFileStorage(File directory) {
+        Objects.requireNonNull(directory, "directory must not be null");
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
+        }
+        if (!directory.canRead() || !directory.canWrite()) {
+            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
+        }
+        this.directory = directory;
+    }
 
     @Override
-    protected boolean isExist(File searchKey) {
-        return searchKey.exists();
+    protected boolean isExist(File file) {
+        return file.exists();
     }
 
     @Override
     protected File findSearchKey(String uuid) {
-        return new File(DIR + "/" + uuid + ".txt");
+        return new File(directory, uuid + ".txt");
     }
 
     @Override
     protected List<Resume> getCopyAll() {
-        List<Resume> resumes = new ArrayList<>();
-        for (File file : Objects.requireNonNull(DIR.listFiles())) {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("Directory read error", null);
+        }
+        List<Resume> resumes = new ArrayList<>(files.length);
+        for (File file : files) {
             Resume resume = doGet(file);
             resumes.add(resume);
         }
@@ -31,50 +47,52 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     }
 
     @Override
-    protected void doUpdate(Resume r, File searchKey) {
-        doSave(r, searchKey);
+    protected void doUpdate(Resume r, File file) {
+        doSave(r, file);
     }
 
     @Override
-    protected void doSave(Resume r, File searchKey) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(searchKey);
+    protected void doSave(Resume r, File file) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
             objectOutputStream.writeObject(r);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StorageException("File write error", r.getUuid(), e);
         }
     }
 
     @Override
-    protected Resume doGet(File searchKey) {
+    protected Resume doGet(File file) {
         Object object;
-        try (FileInputStream fileInputStream = new FileInputStream(searchKey);
+        try (FileInputStream fileInputStream = new FileInputStream(file);
              ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
             object = objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new StorageException("File read error", file.getName(), e);
         }
         return (Resume) object;
     }
 
     @Override
-    protected void doDelete(File searchKey) {
-        boolean delete = searchKey.delete();
+    protected void doDelete(File file) {
+        if (!file.delete()) {
+            throw new StorageException("File delete error", file.getName());
+        }
     }
 
     @Override
     public void clear() {
-        for (File file : Objects.requireNonNull(DIR.listFiles())) {
-            boolean delete = file.delete();
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            doDelete(file);
         }
     }
 
     @Override
     public int size() {
-        int i = 0;
-        for (File file : Objects.requireNonNull(DIR.listFiles())) {
-            i++;
+        String[] strings = directory.list();
+        if (strings == null) {
+            throw new StorageException("Directory read error", null);
         }
-        return i;
+        return strings.length;
     }
 }
