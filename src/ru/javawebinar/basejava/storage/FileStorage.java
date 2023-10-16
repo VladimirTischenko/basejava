@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private final File directory;
 
-    protected AbstractFileStorage(File directory) {
+    protected FileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
@@ -54,7 +54,8 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doSave(Resume r, File file) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedOutputStream)) {
             objectOutputStream.writeObject(r);
         } catch (IOException e) {
             throw new StorageException("File write error", r.getUuid(), e);
@@ -63,14 +64,13 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        Object object;
         try (FileInputStream fileInputStream = new FileInputStream(file);
-             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
-            object = objectInputStream.readObject();
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+             ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream)) {
+            return (Resume) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
-        return (Resume) object;
     }
 
     @Override

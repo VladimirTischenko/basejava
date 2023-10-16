@@ -1,11 +1,14 @@
 package ru.javawebinar.basejava.model;
 
-import java.io.Serializable;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class OrganizationSection extends Section implements Serializable {
+public class OrganizationSection extends Section {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final List<Organization> organizations;
 
     public OrganizationSection(Organization... organizations) {

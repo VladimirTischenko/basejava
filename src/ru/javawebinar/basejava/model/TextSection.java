@@ -1,9 +1,12 @@
 package ru.javawebinar.basejava.model;
 
-import java.io.Serializable;
+import java.io.Serial;
 import java.util.Objects;
 
-public class TextSection extends Section implements Serializable {
+public class TextSection extends Section {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final String text;
 
     public TextSection(String text) {
