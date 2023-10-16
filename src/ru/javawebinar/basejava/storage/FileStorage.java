@@ -53,10 +53,10 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doSave(Resume r, File file) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(bufferedOutputStream)) {
-            objectOutputStream.writeObject(r);
+        try (FileOutputStream fos = new FileOutputStream(file);
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+            oos.writeObject(r);
         } catch (IOException e) {
             throw new StorageException("File write error", r.getUuid(), e);
         }
@@ -64,10 +64,10 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        try (FileInputStream fileInputStream = new FileInputStream(file);
-             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-             ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream)) {
-            return (Resume) objectInputStream.readObject();
+        try (FileInputStream fis = new FileInputStream(file);
+             BufferedInputStream bis = new BufferedInputStream(fis);
+             ObjectInputStream ois = new ObjectInputStream(bis)) {
+            return (Resume) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
