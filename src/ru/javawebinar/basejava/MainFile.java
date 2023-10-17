@@ -6,15 +6,16 @@ import java.util.Objects;
 public class MainFile {
     public static void main(String[] args) {
         File dir = new File(".");
-        printFileNameByRecursion(dir);
+        printFileNameByRecursion(dir, "");
     }
 
-    static void printFileNameByRecursion(File dir) {
+    static void printFileNameByRecursion(File dir, String indent) {
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (file.isFile()) {
-                System.out.println(file.getAbsolutePath());
+                System.out.println(indent + "File: " + file.getAbsolutePath());
             } else {
-                printFileNameByRecursion(file);
+                System.out.println(indent + "Directory: " + file.getAbsolutePath());
+                printFileNameByRecursion(file, indent + "    ");
             }
         }
     }

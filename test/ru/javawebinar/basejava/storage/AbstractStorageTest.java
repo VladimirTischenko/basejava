@@ -12,6 +12,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractStorageTest {
+    static final String DIRECTORY = "./fileStorage";
+
     final Storage storage;
 
     protected AbstractStorageTest(Storage storage) {

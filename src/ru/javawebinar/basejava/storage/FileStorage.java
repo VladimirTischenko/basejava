@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.serializer.ResumeSerializer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,8 +11,9 @@ import java.util.Objects;
 
 public class FileStorage extends AbstractStorage<File> {
     private final File directory;
+    private final ResumeSerializer resumeSerializer;
 
-    protected FileStorage(File directory) {
+    protected FileStorage(File directory, ResumeSerializer resumeSerializer) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
@@ -20,6 +22,7 @@ public class FileStorage extends AbstractStorage<File> {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
         this.directory = directory;
+        this.resumeSerializer = resumeSerializer;
     }
 
     @Override
@@ -54,9 +57,8 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected void doSave(Resume r, File file) {
         try (FileOutputStream fos = new FileOutputStream(file);
-             BufferedOutputStream bos = new BufferedOutputStream(fos);
-             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
-            oos.writeObject(r);
+             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            resumeSerializer.serialize(r, bos);
         } catch (IOException e) {
             throw new StorageException("File write error", r.getUuid(), e);
         }
@@ -65,10 +67,9 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected Resume doGet(File file) {
         try (FileInputStream fis = new FileInputStream(file);
-             BufferedInputStream bis = new BufferedInputStream(fis);
-             ObjectInputStream ois = new ObjectInputStream(bis)) {
-            return (Resume) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+             BufferedInputStream bis = new BufferedInputStream(fis)) {
+            return resumeSerializer.deserialize(bis);
+        } catch (IOException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
     }
