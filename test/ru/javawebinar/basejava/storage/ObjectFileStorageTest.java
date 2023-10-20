@@ -4,8 +4,8 @@ import ru.javawebinar.basejava.model.serializer.ObjectStreamSerializer;
 
 import java.io.File;
 
-class FileStorageTest extends AbstractStorageTest {
-    protected FileStorageTest() {
+class ObjectFileStorageTest extends AbstractStorageTest {
+    protected ObjectFileStorageTest() {
         super(new FileStorage(new File(DIRECTORY), new ObjectStreamSerializer()));
     }
 }
