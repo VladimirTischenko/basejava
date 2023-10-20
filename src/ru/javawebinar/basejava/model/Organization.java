@@ -5,7 +5,6 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import ru.javawebinar.basejava.util.LocalDateAdapter;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
-    @Serial
     private static final long serialVersionUID = 1L;
 
     private Link homePage;
@@ -60,7 +58,6 @@ public class Organization implements Serializable {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static final class Position implements Serializable {
-        @Serial
         private static final long serialVersionUID = 0L;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
         private LocalDate startDate;
