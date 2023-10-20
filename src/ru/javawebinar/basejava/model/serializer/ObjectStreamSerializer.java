@@ -5,7 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.io.*;
 
-public class ObjectStreamResumeSerializer implements ResumeSerializer {
+public class ObjectStreamSerializer implements Serializer {
     @Override
     public void serialize(Resume resume, OutputStream outputStream) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(outputStream)) {
