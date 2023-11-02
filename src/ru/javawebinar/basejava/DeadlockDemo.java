@@ -2,41 +2,29 @@ package ru.javawebinar.basejava;
 
 public class DeadlockDemo {
     // Два объекта-ресурса
-    public final static Object one = new Object(), two = new Object();
+    public static final String S1 = "lock1", S2 = "lock2";
 
     public static void main(String[] s) {
-        // Создаем два потока, которые будут
-        // конкурировать за доступ к объектам
-        // one и two
+        deadLock(S1, S2);
+        deadLock(S2, S1);
+    }
 
-        Thread t1 = new Thread(() -> {
+    private static void deadLock(Object lock1, Object lock2) {
+        new Thread(() -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println(threadName + " Waiting " + lock1);
             // Блокировка первого объекта
-            synchronized (one) {
+            synchronized (lock1) {
+                System.out.println(threadName + " Holding " + lock1);
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException ignored) {}
+                System.out.println(threadName + " Waiting " + lock2);
                 // Блокировка второго объекта
-                synchronized (two) {
-                    System.out.println("Success!");
+                synchronized (lock2) {
+                    System.out.println(threadName + " Holding " + lock2);
                 }
             }
-        });
-
-        Thread t2 = new Thread(() -> {
-            // Блокировка второго объекта
-            synchronized (two) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ignored) {}
-                // Блокировка первого объекта
-                synchronized (one) {
-                    System.out.println("Success!");
-                }
-            }
-        });
-
-        // Запускаем потоки
-        t1.start();
-        t2.start();
+        }).start();
     }
 }

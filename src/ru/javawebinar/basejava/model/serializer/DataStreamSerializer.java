@@ -29,8 +29,7 @@ public class DataStreamSerializer implements Serializer {
             for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
                 dos.writeUTF(entry.getKey().name());
                 Section section = entry.getValue();
-                Class<? extends Section> sectionClass = section.getClass();
-                String sectionClassSimpleName = sectionClass.getSimpleName();
+                String sectionClassSimpleName = section.getClass().getSimpleName();
                 dos.writeUTF(sectionClassSimpleName);
                 switch (sectionClassSimpleName) {
                     case "TextSection":
@@ -47,7 +46,6 @@ public class DataStreamSerializer implements Serializer {
                         List<Organization> organizations = ((OrganizationSection) section).getOrganizations();
                         dos.writeInt(organizations.size());
                         for (Organization organization : organizations) {
-                            Link homePage = organization.getHomePage();
                             List<Organization.Position> positions = organization.getPositions();
                             dos.writeInt(positions.size());
                             for (Organization.Position position : positions) {
@@ -57,6 +55,7 @@ public class DataStreamSerializer implements Serializer {
                                 dos.writeUTF(adapter.marshal(position.getEndDate()));
                                 dos.writeUTF(position.getTitle());
                             }
+                            Link homePage = organization.getHomePage();
                             dos.writeUTF(homePage.getName());
                             dos.writeUTF(homePage.getUrl());
                         }
