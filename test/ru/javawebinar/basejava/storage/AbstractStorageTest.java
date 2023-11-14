@@ -8,9 +8,12 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.javawebinar.basejava.storage.AbstractStorage.FULLNAME_UUID_RESUME_COMPARATOR;
 
 abstract class AbstractStorageTest {
     static final String DIRECTORY = Config.get().getStorageDir();
@@ -21,10 +24,10 @@ abstract class AbstractStorageTest {
         this.storage = storage;
     }
 
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_4 = "uuid4";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String UUID_4 = UUID.randomUUID().toString();
     private static final Resume RESUME_1;
     private static final Resume RESUME_2;
     private static final Resume RESUME_3;
@@ -89,7 +92,8 @@ abstract class AbstractStorageTest {
     @Test
     void getAllSorted() {
         assertSize(3);
-        List<Resume> expectedResumes = List.of(RESUME_2, RESUME_3, RESUME_1);
+        List<Resume> expectedResumes = Arrays.asList(RESUME_2, RESUME_3, RESUME_1);
+        expectedResumes.sort(FULLNAME_UUID_RESUME_COMPARATOR);
         List<Resume> actualResumes = storage.getAllSorted();
         assertIterableEquals(expectedResumes, actualResumes);
     }

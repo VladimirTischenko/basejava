@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class AbstractStorage<SK> implements Storage {
-    static final Comparator<Resume> FULLNAME_RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
+    static final Comparator<Resume> FULLNAME_UUID_RESUME_COMPARATOR = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
     static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
 
     @Override
@@ -49,7 +49,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     public List<Resume> getAllSorted() {
         LOG.info("getAllSorted");
         List<Resume> resumes = getCopyAll();
-        resumes.sort(FULLNAME_RESUME_COMPARATOR);
+        resumes.sort(FULLNAME_UUID_RESUME_COMPARATOR);
         return resumes;
     }
 
