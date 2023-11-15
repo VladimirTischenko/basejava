@@ -1,15 +1,16 @@
 package ru.javawebinar.basejava;
 
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
 public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
-//        resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
-//        resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
-//        resume.addContact(ContactType.LINKEDIN, "Профиль LinkedIn");
-//
+        resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
+        resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
+        resume.addContact(ContactType.LINKEDIN, "Профиль LinkedIn");
+
 //        TextSection objectiveSection = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
 //        resume.addSection(SectionType.OBJECTIVE, objectiveSection);
 //
