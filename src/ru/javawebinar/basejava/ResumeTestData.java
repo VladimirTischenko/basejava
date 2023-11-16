@@ -1,7 +1,6 @@
 package ru.javawebinar.basejava;
 
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 
 public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
@@ -11,21 +10,20 @@ public class ResumeTestData {
         resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
         resume.addContact(ContactType.LINKEDIN, "Профиль LinkedIn");
 
-//        TextSection objectiveSection = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
-//        resume.addSection(SectionType.OBJECTIVE, objectiveSection);
-//
-//        TextSection personalSection = new TextSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.");
-//        resume.addSection(SectionType.PERSONAL, personalSection);
-//
-//        ListSection achievementSection = new ListSection("Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения ...",
-//                "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность...");
-//        resume.addSection(SectionType.ACHIEVEMENT, achievementSection);
-//
-//        ListSection qualificationsSection = new ListSection("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2",
-//                "Version control: Subversion, Git, Mercury, ClearCase, Perforce");
-//        resume.addSection(SectionType.QUALIFICATIONS, qualificationsSection);
-//
-//
+        TextSection objectiveSection = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
+        resume.addSection(SectionType.OBJECTIVE, objectiveSection);
+
+        TextSection personalSection = new TextSection("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.");
+        resume.addSection(SectionType.PERSONAL, personalSection);
+
+        ListSection achievementSection = new ListSection("Организация команды и успешная реализация Java проектов для сторонних заказчиков: приложения ...",
+                "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность...");
+        resume.addSection(SectionType.ACHIEVEMENT, achievementSection);
+
+        ListSection qualificationsSection = new ListSection("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2",
+                "Version control: Subversion, Git, Mercury, ClearCase, Perforce");
+        resume.addSection(SectionType.QUALIFICATIONS, qualificationsSection);
+
 //        Organization.Position position111 = new Organization.Position(DateUtil.of(2013, Month.OCTOBER), DateUtil.NOW, "Автор проекта.",
 //                "Создание, организация и проведение Java онлайн проектов и стажировок.");
 //        Organization organization11 = new Organization("Java Online Projects", "https://javaops.ru/", position111);
@@ -37,7 +35,6 @@ public class ResumeTestData {
 //
 //        OrganizationSection experienceSection = new OrganizationSection(organization11, organization12);
 //        resume.addSection(SectionType.EXPERIENCE, experienceSection);
-//
 //
 //        Organization.Position position211 = new Organization.Position(DateUtil.of(2013, Month.MARCH), DateUtil.of(2013, Month.MAY),
 //                "'Functional Programming Principles in Scala' by Martin Odersky", null);
