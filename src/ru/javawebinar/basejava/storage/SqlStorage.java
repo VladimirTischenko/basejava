@@ -186,8 +186,8 @@ public class SqlStorage implements Storage {
 
     private void addSection(ResultSet rs, Resume resume) throws SQLException {
         String text = rs.getString("text");
-        SectionType type = SectionType.valueOf(rs.getString("type"));
         if (text != null) {
+            SectionType type = SectionType.valueOf(rs.getString("type"));
             if (type == SectionType.OBJECTIVE || type == SectionType.PERSONAL) {
                 resume.addSection(type, new TextSection(text));
             } else if (type == SectionType.ACHIEVEMENT || type == SectionType.QUALIFICATIONS) {
