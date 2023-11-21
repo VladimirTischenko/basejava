@@ -33,10 +33,8 @@ public class ResumeServlet extends HttpServlet {
             List<Resume> resumes = storage.getAllSorted();
             StringBuilder builder = new StringBuilder();
             builder.append("<table><tr><th>Uuid</th><th>Full name</th></tr>");
-            if (resumes.size() > 0) {
-                resumes.forEach(resume -> builder.append("<tr><td>").append(resume.getUuid())
-                        .append("</td><td>").append(resume.getFullName()).append("</td></tr>"));
-            }
+            resumes.forEach(resume -> builder.append("<tr><td>").append(resume.getUuid())
+                    .append("</td><td>").append(resume.getFullName()).append("</td></tr>"));
             builder.append("</table>");
             return builder.toString();
         } else {
