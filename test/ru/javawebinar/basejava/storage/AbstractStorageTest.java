@@ -3,7 +3,7 @@ package ru.javawebinar.basejava.storage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.ResumeTestData;
+import ru.javawebinar.basejava.TestData;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.ContactType;
@@ -13,9 +13,9 @@ import ru.javawebinar.basejava.model.TextSection;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.javawebinar.basejava.TestData.*;
 import static ru.javawebinar.basejava.storage.AbstractStorage.FULLNAME_UUID_RESUME_COMPARATOR;
 
 abstract class AbstractStorageTest {
@@ -25,22 +25,6 @@ abstract class AbstractStorageTest {
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
-    }
-
-    private static final String UUID_1 = UUID.randomUUID().toString();
-    private static final String UUID_2 = UUID.randomUUID().toString();
-    private static final String UUID_3 = UUID.randomUUID().toString();
-    private static final String UUID_4 = UUID.randomUUID().toString();
-    private static final Resume RESUME_1;
-    private static final Resume RESUME_2;
-    private static final Resume RESUME_3;
-    private static final Resume RESUME_4;
-
-    static {
-        RESUME_1 = ResumeTestData.createResume(UUID_1,"Second");
-        RESUME_2 = ResumeTestData.createResume(UUID_2, "First");
-        RESUME_3 = ResumeTestData.createResume(UUID_3, "First");
-        RESUME_4 = ResumeTestData.createResume(UUID_4, "Fourth");
     }
 
     @BeforeEach
@@ -72,7 +56,7 @@ abstract class AbstractStorageTest {
 
     @Test
     void update() {
-        Resume resume = ResumeTestData.createResume(UUID_2, "New Name");
+        Resume resume = TestData.createResume(UUID_2, "New Name");
         resume.addContact(ContactType.SKYPE, "skype:new.skype");
         resume.addSection(SectionType.OBJECTIVE, new TextSection("New position"));
         storage.update(resume);
