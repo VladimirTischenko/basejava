@@ -1,15 +1,16 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.*;
 
 public class ResumeServlet extends HttpServlet {
     final Storage storage = Config.get().getStorage();
@@ -55,6 +56,56 @@ public class ResumeServlet extends HttpServlet {
                 r.addContact(type, value);
             } else {
                 r.getContacts().remove(type);
+            }
+        }
+        for (SectionType type : SectionType.values()) {
+            switch (type) {
+                case OBJECTIVE:
+                case PERSONAL:
+                    String value = req.getParameter(type.name());
+                    if (value != null && value.trim().length() != 0) {
+                        r.addSection(type, new TextSection(value));
+                    } else {
+                        r.getSections().remove(type);
+                    }
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    String[] values = req.getParameterValues(type.name());
+                    if (values.length > 0) {
+                        r.addSection(type, new ListSection(values));
+                    } else {
+                        r.getSections().remove(type);
+                    }
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
+                    String[] organizationNames = req.getParameterValues(type + "organizationName");
+                    String[] urls = req.getParameterValues(type + "url");
+                    String[] startDates = req.getParameterValues(type + "startDate");
+                    String[] endDates = req.getParameterValues(type + "endDate");
+                    String[] titles = req.getParameterValues(type + "title");
+                    String[] descriptions = req.getParameterValues(type + "description");
+                    String[] size = req.getParameterValues(type + "size");
+                    if (organizationNames.length > 0 || urls.length > 0 || startDates.length > 0 || endDates.length > 0 || titles.length > 0) {
+                        List<Organization> organizations = new ArrayList<>();
+                        int positionsSize;
+                        int count = 0;
+                        for (int i = 0; i < titles.length; i++) {
+                            positionsSize = Integer.parseInt(size[i]);
+                            List<Organization.Position> positions = new ArrayList<>();
+                            for (int j = 0; j < positionsSize; j++, count++) {
+                                String description = type == SectionType.EDUCATION ? null : descriptions[count];
+                                Organization.Position position = new Organization.Position(
+                                        DateUtil.toLocalDate(startDates[count]), DateUtil.toLocalDate(endDates[count]), titles[count], description);
+                                positions.add(position);
+                            }
+                            organizations.add(new Organization(new Link(organizationNames[i], urls[i]), positions));
+                        }
+                        r.addSection(type, new OrganizationSection(organizations));
+                    } else {
+                        r.getSections().remove(type);
+                    }
             }
         }
         storage.update(r);

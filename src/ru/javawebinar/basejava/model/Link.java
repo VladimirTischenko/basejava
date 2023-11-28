@@ -54,4 +54,8 @@ public final class Link implements Serializable {
                 ", url='" + url + '\'' +
                 '}';
     }
+
+    public String toHtml() {
+        return "<a href='" + url + "'>" + name + "</a>";
+    }
 }
