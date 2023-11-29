@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
     final Storage storage = Config.get().getStorage();
@@ -30,6 +31,9 @@ public class ResumeServlet extends HttpServlet {
                 storage.delete(uuid);
                 resp.sendRedirect("resume");
                 return;
+            case "add":
+                resume = new Resume();
+                break;
             case "view":
             case "edit":
                 resume = storage.get(uuid);
@@ -48,8 +52,11 @@ public class ResumeServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String uuid = req.getParameter("uuid");
         String fullName = req.getParameter("fullName");
-        Resume r = storage.get(uuid);
-        r.setFullName(fullName);
+        boolean isNew = uuid.equals("");
+        Resume r = isNew ? new Resume(fullName) : storage.get(uuid);
+        if (!isNew) {
+            r.setFullName(fullName);
+        }
         for (ContactType type : ContactType.values()) {
             String value = req.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -72,10 +79,10 @@ public class ResumeServlet extends HttpServlet {
                 case ACHIEVEMENT:
                 case QUALIFICATIONS:
                     String[] values = req.getParameterValues(type.name());
-                    if (values.length > 0) {
-                        r.addSection(type, new ListSection(values));
-                    } else {
+                    if (values == null) {
                         r.getSections().remove(type);
+                    } else {
+                        r.addSection(type, new ListSection(values));
                     }
                     break;
                 case EXPERIENCE:
@@ -87,7 +94,7 @@ public class ResumeServlet extends HttpServlet {
                     String[] titles = req.getParameterValues(type + "title");
                     String[] descriptions = req.getParameterValues(type + "description");
                     String[] size = req.getParameterValues(type + "size");
-                    if (organizationNames.length > 0 || urls.length > 0 || startDates.length > 0 || endDates.length > 0 || titles.length > 0) {
+                    if (organizationNames != null && urls != null && startDates != null && endDates != null && titles != null) {
                         List<Organization> organizations = new ArrayList<>();
                         int positionsSize;
                         int count = 0;
@@ -108,7 +115,11 @@ public class ResumeServlet extends HttpServlet {
                     }
             }
         }
-        storage.update(r);
+        if (isNew) {
+            storage.save(r);
+        } else {
+            storage.update(r);
+        }
         resp.sendRedirect("resume");
     }
 }
