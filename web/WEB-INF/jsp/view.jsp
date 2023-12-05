@@ -1,3 +1,5 @@
+<%@ page import="ru.javawebinar.basejava.model.ListSection" %>
+<%@ page import="ru.javawebinar.basejava.model.OrganizationSection" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -23,18 +25,19 @@
             <jsp:useBean id="sectionEntry" type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
             <c:set var="type" value="${sectionEntry.key}"/>
             <c:set var="section" value="${sectionEntry.value}"/>
+            <jsp:useBean id="section" type="ru.javawebinar.basejava.model.Section"/>
             <strong>${type.title}</strong><br>
             <c:choose>
                 <c:when test="${type == \"OBJECTIVE\" || type == \"PERSONAL\"}">
                     <br>${section}<br><br>
                 </c:when>
                 <c:when test="${type == \"ACHIEVEMENT\" || type == \"QUALIFICATIONS\"}">
-                    <c:forEach var="string" items="${section.list}">
+                    <c:forEach var="string" items="<%=((ListSection) section).getList()%>">
                         <li>${string}</li>
                     </c:forEach>
                 </c:when>
                 <c:when test="${type == \"EXPERIENCE\" || type == \"EDUCATION\"}">
-                    <c:forEach var="organization" items="${section.organizations}">
+                    <c:forEach var="organization" items="<%=((OrganizationSection) section).getOrganizations()%>">
                         <jsp:useBean id="organization" type="ru.javawebinar.basejava.model.Organization"/>
                         <br><%=organization.getHomePage().toHtml()%><br>
                         <c:forEach var="position" items="${organization.positions}">
@@ -49,6 +52,7 @@
                 </c:when>
             </c:choose>
         </c:forEach>
+    <button onclick="window.history.back()">ОК</button>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>

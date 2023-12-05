@@ -4,6 +4,7 @@ import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 import ru.javawebinar.basejava.util.DateUtil;
+import ru.javawebinar.basejava.util.HtmlUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,8 +36,24 @@ public class ResumeServlet extends HttpServlet {
                 resume = new Resume();
                 break;
             case "view":
+                resume = storage.get(uuid);
+                break;
             case "edit":
                 resume = storage.get(uuid);
+                for (SectionType type : new SectionType[]{SectionType.EXPERIENCE, SectionType.EDUCATION}) {
+                    OrganizationSection section = (OrganizationSection) resume.getSection(type);
+                    List<Organization> emptyFirstOrganizations = new ArrayList<>();
+                    emptyFirstOrganizations.add(Organization.EMPTY);
+                    if (section != null) {
+                        for (Organization org : section.getOrganizations()) {
+                            List<Organization.Position> emptyFirstPositions = new ArrayList<>();
+                            emptyFirstPositions.add(Organization.Position.EMPTY);
+                            emptyFirstPositions.addAll(org.getPositions());
+                            emptyFirstOrganizations.add(new Organization(org.getHomePage(), emptyFirstPositions));
+                        }
+                    }
+                    resume.setSection(type, new OrganizationSection(emptyFirstOrganizations));
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal");
@@ -59,60 +76,54 @@ public class ResumeServlet extends HttpServlet {
         }
         for (ContactType type : ContactType.values()) {
             String value = req.getParameter(type.name());
-            if (value != null && value.trim().length() != 0) {
-                r.addContact(type, value);
-            } else {
+            if (HtmlUtil.isEmpty(value)) {
                 r.getContacts().remove(type);
+            } else {
+                r.setContact(type, value);
             }
         }
         for (SectionType type : SectionType.values()) {
+            String value = req.getParameter(type.name());
+            String[] values = req.getParameterValues(type.name());
+            if (HtmlUtil.isEmpty(value) && values.length < 2) {
+                r.getSections().remove(type);
+            }
             switch (type) {
                 case OBJECTIVE:
                 case PERSONAL:
-                    String value = req.getParameter(type.name());
-                    if (value != null && value.trim().length() != 0) {
-                        r.addSection(type, new TextSection(value));
-                    } else {
-                        r.getSections().remove(type);
-                    }
+                    r.setSection(type, new TextSection(value));
                     break;
                 case ACHIEVEMENT:
                 case QUALIFICATIONS:
-                    String[] values = req.getParameterValues(type.name());
-                    if (values == null) {
-                        r.getSections().remove(type);
-                    } else {
-                        r.addSection(type, new ListSection(values));
-                    }
+                    r.setSection(type, new ListSection(values));
                     break;
                 case EXPERIENCE:
                 case EDUCATION:
-                    String[] organizationNames = req.getParameterValues(type + "organizationName");
                     String[] urls = req.getParameterValues(type + "url");
-                    String[] startDates = req.getParameterValues(type + "startDate");
-                    String[] endDates = req.getParameterValues(type + "endDate");
-                    String[] titles = req.getParameterValues(type + "title");
-                    String[] descriptions = req.getParameterValues(type + "description");
-                    String[] size = req.getParameterValues(type + "size");
-                    if (organizationNames != null && urls != null && startDates != null && endDates != null && titles != null) {
-                        List<Organization> organizations = new ArrayList<>();
-                        int positionsSize;
-                        int count = 0;
-                        for (int i = 0; i < titles.length; i++) {
-                            positionsSize = Integer.parseInt(size[i]);
+                    List<Organization> organizations = new ArrayList<>();
+                    for (int i = 0; i < values.length; i++) {
+                        String name = values[i];
+                        if (!HtmlUtil.isEmpty(name)) {
                             List<Organization.Position> positions = new ArrayList<>();
-                            for (int j = 0; j < positionsSize; j++, count++) {
-                                String description = type == SectionType.EDUCATION ? null : descriptions[count];
-                                Organization.Position position = new Organization.Position(
-                                        DateUtil.toLocalDate(startDates[count]), DateUtil.toLocalDate(endDates[count]), titles[count], description);
-                                positions.add(position);
+                            String pfx = type.name() + i;
+
+                            String[] startDates = req.getParameterValues(pfx + "startDate");
+                            String[] endDates = req.getParameterValues(pfx + "endDate");
+                            String[] titles = req.getParameterValues(pfx + "title");
+                            String[] descriptions = req.getParameterValues(pfx + "description");
+
+                            for (int j = 0; j < titles.length; j++) {
+                                if (!HtmlUtil.isEmpty(titles[j])) {
+                                    String description = type == SectionType.EDUCATION ? null : descriptions[j];
+                                    Organization.Position position = new Organization.Position(
+                                            DateUtil.toLocalDate(startDates[j]), DateUtil.toLocalDate(endDates[j]), titles[j], description);
+                                    positions.add(position);
+                                }
                             }
-                            organizations.add(new Organization(new Link(organizationNames[i], urls[i]), positions));
+                            organizations.add(new Organization(new Link(values[i], urls[i]), positions));
                         }
-                        r.addSection(type, new OrganizationSection(organizations));
-                    } else {
-                        r.getSections().remove(type);
                     }
+                    r.setSection(type, new OrganizationSection(organizations));
             }
         }
         if (isNew) {

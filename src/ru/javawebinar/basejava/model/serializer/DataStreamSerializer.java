@@ -74,7 +74,7 @@ public class DataStreamSerializer implements Serializer {
 
             int contactsSize = dis.readInt();
             for (int i = 0; i < contactsSize; i++) {
-                resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
+                resume.setContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
 
             int sectionsSize = dis.readInt();
@@ -82,7 +82,7 @@ public class DataStreamSerializer implements Serializer {
                 String sectionType = dis.readUTF();
                 switch (dis.readUTF()) {
                     case "TextSection":
-                        resume.addSection(getSectionType(sectionType), new TextSection(dis.readUTF()));
+                        resume.setSection(getSectionType(sectionType), new TextSection(dis.readUTF()));
                         break;
                     case "ListSection":
                         int listSize = dis.readInt();
@@ -90,7 +90,7 @@ public class DataStreamSerializer implements Serializer {
                         for (int j = 0; j < listSize; j++) {
                             list.add(dis.readUTF());
                         }
-                        resume.addSection(getSectionType(sectionType), new ListSection(list));
+                        resume.setSection(getSectionType(sectionType), new ListSection(list));
                         break;
                     case "OrganizationSection":
                         int organizationsSize = dis.readInt();
@@ -107,7 +107,7 @@ public class DataStreamSerializer implements Serializer {
                             Organization organization = new Organization(new Link(dis.readUTF(), dis.readUTF()), positions);
                             organizations.add(organization);
                         }
-                        resume.addSection(getSectionType(sectionType), new OrganizationSection(organizations));
+                        resume.setSection(getSectionType(sectionType), new OrganizationSection(organizations));
                         break;
                 }
             }

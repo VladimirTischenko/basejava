@@ -57,8 +57,8 @@ abstract class AbstractStorageTest {
     @Test
     void update() {
         Resume resume = TestData.createResume(UUID_2, "New Name");
-        resume.addContact(ContactType.SKYPE, "skype:new.skype");
-        resume.addSection(SectionType.OBJECTIVE, new TextSection("New position"));
+        resume.setContact(ContactType.SKYPE, "skype:new.skype");
+        resume.setSection(SectionType.OBJECTIVE, new TextSection("New position"));
         storage.update(resume);
         assertEquals(resume, storage.get(UUID_2));
     }

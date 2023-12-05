@@ -64,11 +64,11 @@ public class Resume implements Serializable {
         return sections.get(type);
     }
 
-    public void addContact(ContactType type, String s) {
+    public void setContact(ContactType type, String s) {
         contacts.put(type, s);
     }
 
-    public void addSection(SectionType type, Section section) {
+    public void setSection(SectionType type, Section section) {
         sections.put(type, section);
     }
 
